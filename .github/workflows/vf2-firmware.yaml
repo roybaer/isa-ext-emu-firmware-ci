@@ -24,20 +24,20 @@ jobs:
 
       - name: Install dependencies
         run: |
-          wget https://toolchains.bootlin.com/downloads/releases/toolchains/riscv64-lp64d/tarballs/riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz
+          wget https://toolchains.bootlin.com/downloads/releases/toolchains/riscv64-lp64d/tarballs/riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz -O riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz
           tar -xf riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz
-          export PATH=$PWD/riscv64-lp64d--glibc--bleeding-edge-2024.05-1/bin:$PATH
+          mv riscv64-lp64d--glibc--bleeding-edge-2024.05-1 riscv64-buildroot-linux-gnu
 
       - name: Build OpenSBI
         run: |
           cd opensbi
-          make PLATFORM=generic CROSS_COMPILE=riscv64-unknown-linux-gnu- BUILD_INFO=y FW_OPTIONS=0
+          make PLATFORM=generic CROSS_COMPILE=../riscv64-buildroot-linux-gnu/bin/riscv64-buildroot-linux-gnu- BUILD_INFO=y FW_OPTIONS=0
 
       - name: Build U-Boot
         run: |
           cd u-boot
-          make CROSS_COMPILE=riscv64-unknown-linux-gnu-  starfive_visionfive2_defconfig
-          make CROSS_COMPILE=riscv64-unknown-linux-gnu- OPENSBI=../opensbi/platform/generic/firmware/fw_dynamic.bin
+          make CROSS_COMPILE=../riscv64-buildroot-linux-gnu/bin/riscv64-buildroot-linux-gnu-  starfive_visionfive2_defconfig
+          make CROSS_COMPILE=../riscv64-buildroot-linux-gnu/bin/riscv64-buildroot-linux-gnu- OPENSBI=../opensbi/platform/generic/firmware/fw_dynamic.bin
 
       - name: Release
         uses: softprops/action-gh-release@v1
