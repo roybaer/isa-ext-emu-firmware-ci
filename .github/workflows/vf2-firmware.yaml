@@ -41,11 +41,22 @@ jobs:
           make CROSS_COMPILE=riscv64-linux-gnu-  starfive_visionfive2_defconfig
           make CROSS_COMPILE=riscv64-linux-gnu- OPENSBI=../opensbi/build/platform/generic/firmware/fw_dynamic.bin -j$(nproc)
 
+      - name: Get current build metadata
+        id: metadata
+        run: |
+          echo "::set-output name=date::$(date +'%Y-%m-%d')"
+          echo "::set-output name=opensbi_commit::$(cd opensbi && git rev-parse HEAD)"
+          echo "::set-output name=u_boot_commit::$(cd u-boot && git rev-parse HEAD)"
+
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
-          name: ${{ github.sha }}
-          body: Automated release
+          name: ${{ steps.metadata.outputs.date }}
+          body: |
+            Automated release
+            - OpenSBI commit: https://github.com/riscv-software-src/opensbi/commit/${{ steps.metadata.outputs.opensbi_commit }}
+            - U-Boot commit: https://github.com/u-boot/u-boot/commit/${{ steps.metadata.outputs.u_boot_commit }}
+
           tag_name: v1.0.${{ github.run_number }}
           files: |
             u-boot/spl/u-boot-spl.bin.normal.out
