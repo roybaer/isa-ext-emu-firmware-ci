@@ -41,10 +41,11 @@ jobs:
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
+          token: ${{ secrets.RELEASE_TOKEN }}
+          tag_name: ${{ github.sha }}
+          name: ${{ github.sha }}
+          body: Automated release
           files: |
             u-boot/spl/u-boot-spl.bin.normal.out
             u-boot/u-boot.itb
-          token: ${{ secrets.RELEASE_TOKEN }}
-          tag_name: ${{ github.sha }}
-          release_name: ${{ github.sha }}
-          body: Automated release
+
