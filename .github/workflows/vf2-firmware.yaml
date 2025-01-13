@@ -14,6 +14,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v4
 
@@ -43,7 +46,7 @@ jobs:
         with:
           name: ${{ github.sha }}
           body: Automated release
-          tag_name: default_tag
+          tag_name: v1.0.${{ github.run_number }}
           files: |
             u-boot/spl/u-boot-spl.bin.normal.out
             u-boot/u-boot.itb
