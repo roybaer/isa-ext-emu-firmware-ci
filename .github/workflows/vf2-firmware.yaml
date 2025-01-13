@@ -36,7 +36,7 @@ jobs:
         run: |
           cd u-boot
           make CROSS_COMPILE=riscv64-linux-gnu-  starfive_visionfive2_defconfig
-          make CROSS_COMPILE=riscv64-linux-gnu- OPENSBI=../opensbi/platform/generic/firmware/fw_dynamic.bin -j$(nproc)
+          make CROSS_COMPILE=riscv64-linux-gnu- OPENSBI=../opensbi/build/platform/generic/firmware/fw_dynamic.bin -j$(nproc)
 
       - name: Release
         uses: softprops/action-gh-release@v1
