@@ -1,13 +1,12 @@
 name: vf2-firmware
 
--- once a week
 on:
   push:
     branches:
-      - master
+      - main
   pull_request:
     branches:
-      - master
+      - main
   schedule:
     - cron: '0 0 * * 0'
 
@@ -18,13 +17,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Pull submodules
-        run: git submodule update --init --recursive --depth=1
+      - name: Pull repositories
+        run: |
+          git clone --depth 1 https://github.com/riscv-software-src/opensbi.git
+          git clone --depth 1 https://github.com/u-boot/u-boot.git
 
       - name: Install dependencies
         run: |
-          sudo apt update
-          sudo apt install -y riscv64-unknown-linux-gnu-gcc
+          wget https://toolchains.bootlin.com/downloads/releases/toolchains/riscv64-lp64d/tarballs/riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz
+          tar -xf riscv64-lp64d--glibc--bleeding-edge-2024.05-1.tar.xz
+          export PATH=$PWD/riscv64-lp64d--glibc--bleeding-edge-2024.05-1/bin:$PATH
 
       - name: Build OpenSBI
         run: |
