@@ -1,0 +1,49 @@
+name: vf2-firmware
+
+-- once a week
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pull submodules
+        run: git submodule update --init --recursive --depth=1
+
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install -y riscv64-unknown-linux-gnu-gcc
+
+      - name: Build OpenSBI
+        run: |
+          cd opensbi
+          make PLATFORM=generic CROSS_COMPILE=riscv64-unknown-linux-gnu- BUILD_INFO=y FW_OPTIONS=0
+
+      - name: Build U-Boot
+        run: |
+          cd u-boot
+          make CROSS_COMPILE=riscv64-unknown-linux-gnu-  starfive_visionfive2_defconfig
+          make CROSS_COMPILE=riscv64-unknown-linux-gnu- OPENSBI=../opensbi/platform/generic/firmware/fw_dynamic.bin
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            u-boot/spl/u-boot-spl.bin.normal.out
+            u-boot/u-boot.itb
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ github.sha }}
+          release_name: ${{ github.sha }}
+          body: Automated release
