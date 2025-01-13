@@ -44,9 +44,9 @@ jobs:
       - name: Get current build metadata
         id: metadata
         run: |
-          echo "::set-output name=date::$(date +'%Y-%m-%d')"
-          echo "::set-output name=opensbi_commit::$(cd opensbi && git rev-parse HEAD)"
-          echo "::set-output name=u_boot_commit::$(cd u-boot && git rev-parse HEAD)"
+          echo "date=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "opensbi_commit=$(cd opensbi && git rev-parse HEAD)" >> $GITHUB_ENV
+          echo "u_boot_commit=$(cd u-boot && git rev-parse HEAD)" >> $GITHUB_ENV
 
       - name: Release
         uses: softprops/action-gh-release@v1
