@@ -1,4 +1,4 @@
-name: vf2-firmware
+name: opi-rv2-firmware
 
 on:
   push:
@@ -22,8 +22,8 @@ jobs:
 
       - name: Pull repositories
         run: |
-          git clone --depth 1 https://github.com/roybaer/opensbi-isa-ext-emu.git opensbi
-          git clone --depth 1 https://github.com/u-boot/u-boot.git
+          git clone --depth 1 --branch k1-isa-ext-emu https://github.com/roybaer/opensbi-isa-ext-emu.git opensbi
+          git clone --depth 1 --branch v2022.10-ky https://github.com/orangepi-xunlong/u-boot-orangepi.git u-boot
 
       - name: Install dependencies
         run: |
@@ -38,9 +38,10 @@ jobs:
       - name: Build U-Boot
         run: |
           cd u-boot
-          make CROSS_COMPILE=riscv64-linux-gnu-  starfive_visionfive2_defconfig
+          make CROSS_COMPILE=riscv64-linux-gnu-  x1_defconfig
+          mv opensbi opensbi_old
+          ln -s ../opensbi opensbi
           make CROSS_COMPILE=riscv64-linux-gnu- OPENSBI=../opensbi/build/platform/generic/firmware/fw_dynamic.bin -j$(nproc)
-          cp u-boot.itb visionfive2_fw_payload.img
 
       - name: Get current build metadata
         id: metadata
@@ -54,11 +55,15 @@ jobs:
         with:
           name: ${{ steps.metadata.outputs.date }}
           body: |
-            Automated release for VisionFive 2
+            Automated release for Orange Pi RV2
             - OpenSBI commit: https://github.com/roybaer/opensbi-isa-ext-emu/commit/${{ steps.metadata.outputs.opensbi_commit }}
-            - U-Boot commit: https://github.com/u-boot/u-boot/commit/${{ steps.metadata.outputs.u_boot_commit }}
+            - U-Boot commit: https://github.com/orangepi-xunlong/u-boot-orangepi/commit/${{ steps.metadata.outputs.u_boot_commit }}
 
           tag_name: v1.0.${{ github.run_number }}
           files: |
-            u-boot/spl/u-boot-spl.bin.normal.out
-            u-boot/visionfive2_fw_payload.img
+            u-boot/bootinfo_emmc.bin
+            u-boot/bootinfo_sd.bin
+            u-boot/bootinfo_spinor.bin
+            u-boot/FSBL.bin
+            u-boot/u-boot-env-default.bin
+            u-boot/u-boot-opensbi.itb
