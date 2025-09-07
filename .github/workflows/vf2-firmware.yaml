@@ -55,8 +55,8 @@ jobs:
           name: ${{ steps.metadata.outputs.date }}
           body: |
             Automated release for VisionFive 2
-            - OpenSBI commit: https://github.com/roybaer/opensbi-isa-ext-emu/commit/${{ steps.metadata.outputs.opensbi_commit }}
-            - U-Boot commit: https://github.com/u-boot/u-boot/commit/${{ steps.metadata.outputs.u_boot_commit }}
+            - OpenSBI commit (on isa-ext-emu): https://github.com/roybaer/opensbi-isa-ext-emu/commit/${{ steps.metadata.outputs.opensbi_commit }}
+            - U-Boot commit (on master): https://github.com/u-boot/u-boot/commit/${{ steps.metadata.outputs.u_boot_commit }}
 
           tag_name: v1.0.${{ github.run_number }}-vf2
           files: |
